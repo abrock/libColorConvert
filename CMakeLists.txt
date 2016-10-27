@@ -2,6 +2,8 @@ project (libColorConvert CXX)
 
 SET(CMAKE_CXX_FLAGS "-std=c++11 -Wall -pedantic -g -ggdb -O3 -fopenmp")
 
+
+if (NOT TARGET ColorConvert)
 FIND_PACKAGE(OpenCV REQUIRED)
 INCLUDE_DIRECTORIES(${OpenCV_Include_Dirs})
 
@@ -18,3 +20,4 @@ target_link_libraries(testColorConvert ${GTEST_BOTH_LIBRARIES})
 add_subdirectory(libRunningStats)
 
 target_link_libraries(testColorConvert RunningStats)
+endif()

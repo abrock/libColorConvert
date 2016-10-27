@@ -196,6 +196,8 @@ Vec rgb2DIN(const Vec& src) {
 }
 
 template cv::Vec3d rgb2DIN(const cv::Vec3d&);
+template cv::Vec3f rgb2DIN(const cv::Vec3f&);
+template cv::Scalar rgb2DIN(const cv::Scalar&);
 
 template<class Source, class T>
 void DIN2rgb(const Source L, const Source a, const Source b, T& dest_r, T& dest_g, T& dest_b) {
@@ -213,6 +215,8 @@ Vec DIN2rgb(const Vec& src) {
 }
 
 template cv::Vec3d DIN2rgb(const cv::Vec3d&);
+template cv::Vec3f DIN2rgb(const cv::Vec3f&);
+template cv::Scalar DIN2rgb(const cv::Scalar&);
 
 /**
  * Calculate the square of a float.
