@@ -33,7 +33,7 @@ void string2rgb(const std::string& rgb, int& r, int& g, int& b) {
  * @param[out] DIN_b calculated b-value in the DIN99 system.
  */
 template<class T>
-void lab2DIN(const T L, const T a, const T b, T& DIN_L, T& DIN_a, T& DIN_b) {
+void Lab2DIN(const T L, const T a, const T b, T& DIN_L, T& DIN_a, T& DIN_b) {
 
 #define COS16 0.96126169593831886192
 #define SIN16 0.27563735581699918561
@@ -53,8 +53,57 @@ void lab2DIN(const T L, const T a, const T b, T& DIN_L, T& DIN_a, T& DIN_b) {
         DIN_a = k * DIN_e / DIN_G;
         DIN_b = k * DIN_f / DIN_G;
     }
+}
+
+template void Lab2DIN(double, double, double, double&, double&, double&);
+
+/**
+ * Convert DIN99-values to L*a*b-values.
+ *
+ * @param[in] L L-value in the DIN99 system
+ * @param[in] L a-value in the DIN99 system
+ * @param[in] L b-value in the DIN99 system
+ * @param[out] DIN_L calculated L-value in the L*a*b system.
+ * @param[out] DIN_a calculated a-value in the L*a*b system.
+ * @param[out] DIN_b calculated b-value in the L*a*b system.
+ */
+template<class T>
+void DIN2Lab(const T DIN_L, const T DIN_a, const T DIN_b, T& L, T& a, T& b) {
+
+    double h_99ef = std::numeric_limits<double>::quiet_NaN();
+    if (DIN_a > 0 && DIN_b >= 0) {
+        h_99ef = std::atan(DIN_b / DIN_a);
+    }
+    else if (DIN_a == 0 && DIN_b > 0) {
+        h_99ef = M_PI_2;
+    }
+    else if (DIN_a < 0) {
+        h_99ef = M_PI + std::atan(DIN_b / DIN_a);
+    }
+    else if (DIN_a == 0 && DIN_b < 0) {
+        h_99ef = 3 * M_PI_2;
+    }
+    else if (DIN_a > 0 && DIN_b <= 0) {
+        h_99ef = 2 * M_PI + std::atan(DIN_b / DIN_a);
+    }
+    else if (DIN_a == 0 && DIN_b == 0) {
+        h_99ef = 0;
+    }
+
+    const double C_99 = std::sqrt(DIN_a * DIN_a + DIN_b * DIN_b);
+#define k_CH 1
+#define k_E 1
+    const double G = (std::exp(0.045 * C_99 * k_CH * k_E) - 1.0) / 0.045;
+    const double e = G * std::cos(h_99ef);
+    const double f = G * std::sin(h_99ef);
+
+    a = e * COS16 - (f/.7) * SIN16;
+    b = e * SIN16 + (f/.7) * COS16;
+    L = (std::exp(DIN_L * k_E / 105.51) - 1) / 0.0158;
 
 }
+
+template void DIN2Lab<double>(double, double, double, double&, double&, double&);
 
 
 template<class Source, class T>
@@ -96,7 +145,7 @@ void Lab2rgb(const Source L, const Source a, const Source b, T& dest_r, T& dest_
     dest_b = static_cast<T>(255.0 * M.at<cv::Vec3f>(0,0)[2]);
 }
 
-template void Lab2rgb<double, double>(const double, const double, const double, double&, double&, double&);
+template void Lab2rgb(const double, const double, const double, double&, double&, double&);
 
 /**
  * Convert a string containing a hexadecimal RGB-representation of some color to a L*a*b-representation of the same color.
@@ -128,8 +177,42 @@ template<class T>
 void rgb2DIN(const std::string& rgb, T& DIN_L, T& DIN_a, T& DIN_b) {
     float L = 0, a = 0, b = 0;
     rgb2Lab(rgb, L, a, b);
-    lab2DIN(L, a, b, DIN_L, DIN_a, DIN_b);
+    Lab2DIN(L, a, b, DIN_L, DIN_a, DIN_b);
 }
+
+template<class Source, class T>
+void rgb2DIN(const Source r, const Source g, const Source b, T& dest_L, T& dest_a, T& dest_b) {
+    rgb2Lab(r,g,b, dest_L, dest_a, dest_b);
+    Lab2DIN(dest_L, dest_a, dest_b, dest_L, dest_a, dest_b);
+}
+
+template void rgb2DIN(double, double, double, double&, double&, double&);
+
+template<class Vec>
+Vec rgb2DIN(const Vec& src) {
+    Vec dst;
+    rgb2DIN(src[0], src[1], src[2], dst[0], dst[1], dst[2]);
+    return dst;
+}
+
+template cv::Vec3d rgb2DIN(const cv::Vec3d&);
+
+template<class Source, class T>
+void DIN2rgb(const Source L, const Source a, const Source b, T& dest_r, T& dest_g, T& dest_b) {
+    DIN2Lab(L, a, b, dest_r, dest_g, dest_b);
+    Lab2rgb(dest_r, dest_g, dest_b, dest_r, dest_g, dest_b);
+}
+
+template void DIN2rgb(double, double, double, double&, double&, double&);
+
+template<class Vec>
+Vec DIN2rgb(const Vec& src) {
+    Vec dst;
+    DIN2rgb(src[0], src[1], src[2], dst[0], dst[1], dst[2]);
+    return dst;
+}
+
+template cv::Vec3d DIN2rgb(const cv::Vec3d&);
 
 /**
  * Calculate the square of a float.
@@ -175,5 +258,49 @@ double DINDiff(const std::string& x, const std::string& y) {
 
     return std::sqrt(sqr(x_L-y_L) + sqr(x_a-y_a) + sqr(x_b-y_b));
 }
+
+template<class Vec>
+Vec rgb2Lab(const Vec& src) {
+    Vec result;
+    rgb2Lab(src[0], src[1], src[2], result[0], result[1], result[2]);
+    return result;
+}
+
+template cv::Vec3f rgb2Lab(const cv::Vec3f&);
+template cv::Vec3d rgb2Lab(const cv::Vec3d&);
+template cv::Scalar rgb2Lab(const cv::Scalar&);
+
+template<class Vec>
+Vec Lab2rgb(const Vec& src) {
+    Vec result;
+    Lab2rgb(src[0], src[1], src[2], result[0], result[1], result[2]);
+    return result;
+}
+
+template cv::Vec3f Lab2rgb(const cv::Vec3f&);
+template cv::Vec3d Lab2rgb(const cv::Vec3d&);
+template cv::Scalar Lab2rgb(const cv::Scalar&);
+
+template<class Vec>
+Vec DIN2Lab(const Vec& src) {
+    Vec result;
+    DIN2Lab(src[0], src[1], src[2], result[0], result[1], result[2]);
+    return result;
+}
+
+template cv::Vec3f DIN2Lab(const cv::Vec3f&);
+template cv::Vec3d DIN2Lab(const cv::Vec3d&);
+template cv::Scalar DIN2Lab(const cv::Scalar&);
+
+template<class Vec>
+Vec Lab2DIN(const Vec& src) {
+    Vec result;
+    Lab2DIN(src[0], src[1], src[2], result[0], result[1], result[2]);
+    return result;
+}
+
+template cv::Vec3f Lab2DIN(const cv::Vec3f&);
+template cv::Vec3d Lab2DIN(const cv::Vec3d&);
+template cv::Scalar Lab2DIN(const cv::Scalar&);
 
 }

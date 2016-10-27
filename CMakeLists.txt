@@ -14,3 +14,7 @@ target_link_libraries(ColorConvert ${OpenCV_LIBS})
 
 find_package(GTest REQUIRED)
 target_link_libraries(testColorConvert ${GTEST_BOTH_LIBRARIES})
+
+add_subdirectory(libRunningStats)
+
+target_link_libraries(testColorConvert RunningStats)
