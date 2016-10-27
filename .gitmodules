@@ -1,0 +1,3 @@
+[submodule "libRunningStats"]
+	path = libRunningStats
+	url = git@github.com:abrock/libRunningStats.git
