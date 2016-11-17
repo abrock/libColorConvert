@@ -307,4 +307,14 @@ template cv::Vec3f Lab2DIN(const cv::Vec3f&);
 template cv::Vec3d Lab2DIN(const cv::Vec3d&);
 template cv::Scalar Lab2DIN(const cv::Scalar&);
 
+template<class Vec>
+double DINDiff(const Vec& a, const Vec& b) {
+    const Vec DIN_DIFF = rgb2DIN(a) - rgb2DIN(b);
+    return std::sqrt(DIN_DIFF[0] * DIN_DIFF[0] + DIN_DIFF[1] * DIN_DIFF[1] + DIN_DIFF[2] * DIN_DIFF[2]);
+}
+
+template double DINDiff(const cv::Vec3f&, const cv::Vec3f&);
+template double DINDiff(const cv::Vec3d&, const cv::Vec3d&);
+template double DINDiff(const cv::Scalar&, const cv::Scalar&);
+
 }
