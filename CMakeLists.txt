@@ -18,3 +18,7 @@ target_link_libraries(testColorConvert ${GTEST_BOTH_LIBRARIES})
 add_subdirectory(libRunningStats)
 
 target_link_libraries(testColorConvert RunningStats)
+
+add_executable(plotcolorspace plotcolorspace.cpp)
+target_link_libraries(plotcolorspace ${OpenCV_LIBS})
+target_link_libraries(plotcolorspace ColorConvert)
