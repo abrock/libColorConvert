@@ -446,6 +446,8 @@ TEST(rgb2DINVec3d, bijective) {
 int main(int argc, char** argv) {
   test();
   testing::InitGoogleTest(&argc, argv);
+  cv::Scalar test;
+  cv::Scalar test2 = ColorConvert::rgb2DIN(test);
   std::cout << "RUN_ALL_TESTS return value: " << RUN_ALL_TESTS() << std::endl;
   return 0;
 }

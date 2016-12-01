@@ -140,6 +140,9 @@ namespace ColorConvert {
      */
     double DINDiff(const std::string& x, const std::string& y);
 
+    template<class Vec>
+    double DINDiff(const Vec& a, const Vec& b);
+
     template<class Source, class T>
     void Lab2rgb(const Source L, const Source a, const Source b, T& dest_r, T& dest_g, T& dest_b);
 }
