@@ -3,8 +3,8 @@
 
 #include <string>
 #include <cmath>
-#include <opencv/highgui.h>
-#include <opencv/cv.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
 
 namespace ColorConvert {
     /**

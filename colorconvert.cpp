@@ -1,5 +1,7 @@
 #include "colorconvert.h"
 
+#include <opencv2/imgproc.hpp>
+
 
 namespace ColorConvert {
 
@@ -15,9 +17,9 @@ namespace ColorConvert {
 void string2rgb(const std::string& rgb, int& r, int& g, int& b) {
     r = b = g = 0;
     try {
-        r = std::stoi(rgb.substr(0,2), 0, 16);
-        g = std::stoi(rgb.substr(2,2), 0, 16);
-        b = std::stoi(rgb.substr(4,2), 0, 16);
+        r = std::stoi(rgb.substr(0,2), nullptr, 16);
+        g = std::stoi(rgb.substr(2,2), nullptr, 16);
+        b = std::stoi(rgb.substr(4,2), nullptr, 16);
     }
     catch(std::exception& e){}// Who cares?
 }

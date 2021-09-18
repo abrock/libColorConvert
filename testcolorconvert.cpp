@@ -1,7 +1,10 @@
+#undef NDEBUG
+#include <cassert>
+
 #include "colorconvert.h"
 #include <gtest/gtest.h>
 #include <random>
-#include "libRunningStats/runningstats.h"
+#include <runningstats/runningstats.h>
 
 #define ZERO_PROBABILITY 0.03
 
@@ -98,7 +101,7 @@ void test() {
 TEST(rgb2lab, bijective) {
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0,255);
-    RunningStats diff_r, diff_g, diff_b;
+    runningstats::RunningStats diff_r, diff_g, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double orig_r = distribution(generator);
         const double orig_g = distribution(generator);
@@ -135,7 +138,7 @@ TEST(Lab2rgb, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 5e3; ++ii) {
         const double orig_L = dist_L(generator);
         const double orig_a = dist_a(generator);
@@ -170,7 +173,7 @@ TEST(Lab2DIN, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double orig_L = dist_L(generator);
         const double orig_a = dist_a(generator);
@@ -204,7 +207,7 @@ TEST(DIN2Lab, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double orig_L = dist_L(generator);
         const double orig_a = dist_a(generator);
@@ -238,7 +241,7 @@ TEST(DIN2LabVec3f, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const cv::Vec3f orig(dist_L(generator), dist_a(generator), dist_b(generator));
         const cv::Vec3f intermediate = ColorConvert::DIN2Lab(orig);
@@ -269,7 +272,7 @@ TEST(DIN2LabVec3d, bijective) {
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
     std::uniform_real_distribution<double> dist(0, 1);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double L_sign = dist(generator) < ZERO_PROBABILITY ? 0 : 1;
         const double a_sign = dist(generator) < ZERO_PROBABILITY ? 0 : 1;
@@ -302,7 +305,7 @@ TEST(Lab2DINVec3f, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const cv::Vec3f orig(dist_L(generator), dist_a(generator), dist_b(generator));
         const cv::Vec3f intermediate = ColorConvert::Lab2DIN(orig);
@@ -332,7 +335,7 @@ TEST(Lab2DINScalar, bijective) {
     std::uniform_real_distribution<double> dist_L(0,100);
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const cv::Scalar orig(dist_L(generator), dist_a(generator), dist_b(generator));
         const cv::Scalar intermediate = ColorConvert::Lab2DIN(orig);
@@ -363,7 +366,7 @@ TEST(Lab2DINVec3d, bijective) {
     std::uniform_real_distribution<double> dist_a(-170,100);
     std::uniform_real_distribution<double> dist_b(-100,150);
     std::uniform_real_distribution<double> dist(0,1);
-    RunningStats diff_L, diff_a, diff_b;
+    runningstats::RunningStats diff_L, diff_a, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double L_sign = dist(generator) < ZERO_PROBABILITY ? 0 : 1;
         const double a_sign = dist(generator) < ZERO_PROBABILITY ? 0 : 1;
@@ -394,7 +397,7 @@ TEST(Lab2DINVec3d, bijective) {
 TEST(rgb2LabVec3d, bijective) {
     std::default_random_engine generator;
     std::uniform_real_distribution<double> dist(0,255);
-    RunningStats diff_r, diff_g, diff_b;
+    runningstats::RunningStats diff_r, diff_g, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double r_sign = dist(generator)/255 < ZERO_PROBABILITY ? 0 : 1;
         const double g_sign = dist(generator)/255 < ZERO_PROBABILITY ? 0 : 1;
@@ -420,7 +423,7 @@ TEST(rgb2LabVec3d, bijective) {
 TEST(rgb2DINVec3d, bijective) {
     std::default_random_engine generator;
     std::uniform_real_distribution<double> dist(0,255);
-    RunningStats diff_r, diff_g, diff_b;
+    runningstats::RunningStats diff_r, diff_g, diff_b;
     for (size_t ii = 0; ii < 1e5; ++ii) {
         const double r_sign = dist(generator)/255 < ZERO_PROBABILITY ? 0 : 1;
         const double g_sign = dist(generator)/255 < ZERO_PROBABILITY ? 0 : 1;
@@ -448,6 +451,7 @@ int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   cv::Scalar test;
   cv::Scalar test2 = ColorConvert::rgb2DIN(test);
+  std::cout << "test2: " << test2 << std::endl;
   std::cout << "RUN_ALL_TESTS return value: " << RUN_ALL_TESTS() << std::endl;
   return 0;
 }
